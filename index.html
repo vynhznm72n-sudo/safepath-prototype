@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Safe Path — Demo Prototype</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+        .screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background: #0a0a0a;
+        }
+        .screen.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* === ROLE SELECT === */
+        .role-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d4aa, #00a8e8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .subtitle { color: #888; font-size: 14px; margin-bottom: 40px; }
+        .role-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            width: 100%;
+            max-width: 360px;
+        }
+        .role-card {
+            background: #1a1a2e;
+            border: 2px solid #2a2a4a;
+            border-radius: 20px;
+            padding: 28px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .role-card:hover, .role-card:active {
+            border-color: #00d4aa;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0,212,170,0.2);
+        }
+        .role-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .role-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .role-desc {
+            font-size: 12px;
+            color: #888;
+            line-height: 1.4;
+        }
+        .role-card.teen { border-color: #00d4aa; }
+        .role-card.parent { border-color: #ff6b6b; }
+        .role-card.business { border-color: #ffd93d; grid-column: span 2; }
+
+        /* === AUTH === */
+        .auth-container {
+            padding: 40px 24px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .auth-header h2 { font-size: 24px; margin-bottom: 8px; }
+        .auth-header p { color: #888; font-size: 14px; }
+        .auth-tabs {
+            display: flex;
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 24px;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #888;
+        }
+        .auth-tab.active {
+            background: #00d4aa;
+            color: #0a0a0a;
+        }
+        .form-group { margin-bottom: 16px; }
+        .form-label {
+            display: block;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #1a1a2e;
+            border: 2px solid #2a2a4a;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .form-input:focus { border-color: #00d4aa; }
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #00d4aa, #00a8e8);
+            border: none;
+            border-radius: 12px;
+            color: #0a0a0a;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 8px;
+        }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-secondary {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            border: 2px solid #2a2a4a;
+            border-radius: 12px;
+            color: #888;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+        .back-btn {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        /* === TEEN INTERFACE === */
+        .teen-header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10,10,10,0.9);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .teen-greeting { font-size: 20px; font-weight: 700; }
+        .teen-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #00d4aa;
+        }
+        .status-dot {
+            width: 8px; height: 8px;
+            background: #00d4aa;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 50vh;
+            background: #0d1b2a;
+            overflow: hidden;
+        }
+        .map-bg {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(0,212,170,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(0,168,232,0.1) 0%, transparent 50%);
+        }
+        .map-grid {
+            position: absolute;
+            width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .safe-zone {
+            position: absolute;
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: rgba(0,212,170,0.2);
+            border: 2px solid #00d4aa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            animation: zonePulse 3s infinite;
+        }
+        .safe-zone:hover { transform: scale(1.2); background: rgba(0,212,170,0.4); }
+        @keyframes zonePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0,212,170,0.4); }
+            50% { box-shadow: 0 0 0 15px rgba(0,212,170,0); }
+        }
+        .safe-zone.active {
+            background: rgba(0,212,170,0.5);
+            box-shadow: 0 0 30px rgba(0,212,170,0.5);
+        }
+        .user-avatar {
+            position: absolute;
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #00d4aa, #00a8e8);
+            border-radius: 50%;
+            border: 3px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            z-index: 10;
+            transition: all 0.8s ease;
+            box-shadow: 0 4px 20px rgba(0,212,170,0.5);
+        }
+        .route-line {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, #00d4aa, #00a8e8);
+            border-radius: 2px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 5;
+        }
+
+        .sos-section {
+            padding: 20px;
+            text-align: center;
+        }
+        .sos-btn {
+            width: 140px; height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff4757, #ff6348);
+            border: 4px solid rgba(255,71,87,0.3);
+            color: #fff;
+            font-size: 18px;
+            font-weight: 800;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 8px 32px rgba(255,71,87,0.3);
+        }
+        .sos-btn:active { transform: scale(0.95); }
+        .sos-btn::before {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,71,87,0.3);
+            animation: sosRing 2s infinite;
+        }
+        @keyframes sosRing {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        .sos-hint {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .teen-nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            background: #1a1a2e;
+            border-top: 1px solid #2a2a4a;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        .nav-item.active { color: #00d4aa; }
+        .nav-item:not(.active) { color: #888; }
+        .nav-icon { font-size: 22px; }
+        .nav-label { font-size: 11px; }
+
+        /* === PARENT DASHBOARD === */
+        .parent-header {
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #1a1a2e, #2d1b69);
+        }
+        .parent-title { font-size: 22px; font-weight: 700; }
+        .child-card {
+            margin: 16px 20px;
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            border: 1px solid #2a2a4a;
+        }
+        .child-avatar {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .child-info { flex: 1; }
+        .child-name { font-size: 16px; font-weight: 700; }
+        .child-location {
+            font-size: 13px;
+            color: #888;
+            margin-top: 2px;
+        }
+        .child-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-safe { background: rgba(0,212,170,0.2); color: #00d4aa; }
+        .status-alert { background: rgba(255,71,87,0.2); color: #ff4757; animation: alertBlink 1s infinite; }
+        @keyframes alertBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .alert-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,71,87,0.95);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+        .alert-overlay.active { display: flex; }
+        .alert-icon { font-size: 80px; margin-bottom: 20px; animation: shake 0.5s infinite; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .alert-title { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+        .alert-text { font-size: 16px; opacity: 0.9; margin-bottom: 24px; }
+        .alert-actions {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .alert-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .alert-btn.primary { background: #fff; color: #ff4757; }
+        .alert-btn.secondary { background: rgba(255,255,255,0.2); color: #fff; }
+
+        /* === BUSINESS === */
+        .biz-header {
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #1a1a2e, #1a1a1a);
+        }
+        .biz-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 16px 20px;
+        }
+        .stat-card {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #2a2a4a;
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffd93d, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-label { font-size: 12px; color: #888; margin-top: 4px; }
+        .protocol-card {
+            margin: 0 20px 16px;
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #2a2a4a;
+        }
+        .protocol-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #2a2a4a;
+        }
+        .protocol-step:last-child { border-bottom: none; }
+        .step-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: #ffd93d;
+            color: #0a0a0a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .step-text { font-size: 14px; }
+
+        /* === SETTINGS === */
+        .settings-section {
+            padding: 20px;
+        }
+        .settings-title {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            padding: 0 4px;
+        }
+        .settings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #1a1a2e;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .settings-item:active { background: #2a2a4a; }
+        .settings-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .settings-icon { font-size: 20px; }
+        .settings-text { font-size: 15px; }
+        .settings-value {
+            font-size: 14px;
+            color: #888;
+        }
+        .toggle {
+            width: 48px; height: 28px;
+            background: #2a2a4a;
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .toggle.active { background: #00d4aa; }
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 24px; height: 24px;
+            background: #fff;
+            border-radius: 50%;
+            top: 2px; left: 2px;
+            transition: transform 0.3s;
+        }
+        .toggle.active::after { transform: translateX(20px); }
+
+        .lang-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .lang-chip {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #2a2a4a;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .lang-chip.active {
+            background: #00d4aa;
+            color: #0a0a0a;
+            font-weight: 700;
+        }
+
+        /* === TOAST === */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1a1a2e;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s;
+            border: 1px solid #2a2a4a;
+            white-space: nowrap;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* === COUNTDOWN === */
+        .countdown-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .countdown-overlay.active { display: flex; }
+        .countdown-ring {
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            border: 4px solid #ff4757;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+            font-weight: 800;
+            color: #ff4757;
+            animation: countdownPulse 1s infinite;
+        }
+        @keyframes countdownPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .countdown-text {
+            margin-top: 24px;
+            font-size: 18px;
+            color: #888;
+        }
+        .countdown-cancel {
+            margin-top: 32px;
+            padding: 14px 32px;
+            background: #2a2a4a;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* === EVIDENCE MODE === */
+        .evidence-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: rgba(255,71,87,0.9);
+            padding: 8px 16px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+        .evidence-bar.active { display: flex; }
+        .rec-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .rec-dot {
+            width: 10px; height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            animation: recBlink 1s infinite;
+        }
+        @keyframes recBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* === LIVE COMPANION === */
+        .companion-list {
+            padding: 16px 20px;
+        }
+        .companion-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: #1a1a2e;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+        .companion-avatar {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .companion-name { font-weight: 600; }
+        .companion-status { font-size: 12px; color: #00d4aa; }
+
+        .hidden { display: none !important; }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+<!-- ==================== SCREEN 1: ROLE SELECT ==================== -->
+<div id="screen-role" class="screen active role-screen">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <div class="logo">🛡️ Safe Path</div>
+        <div class="subtitle">Выберите вашу роль</div>
+    </div>
+    <div class="role-grid">
+        <div class="role-card teen" onclick="selectRole('teen')">
+            <span class="role-icon">🎓</span>
+            <div class="role-title">Подросток</div>
+            <div class="role-desc">Trust Map, Smart SOS, Live Companion</div>
+        </div>
+        <div class="role-card parent" onclick="selectRole('parent')">
+            <span class="role-icon">👨‍👩‍👧</span>
+            <div class="role-title">Родитель</div>
+            <div class="role-desc">Safety Dashboard, Live Tracking</div>
+        </div>
+        <div class="role-card business" onclick="selectRole('business')">
+            <span class="role-icon">🏪</span>
+            <div class="role-title">Бизнес-партнёр</div>
+            <div class="role-desc">Приём тревог, ESG-аналитика, протокол</div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 2: AUTH ==================== -->
+<div id="screen-auth" class="screen">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div class="auth-container">
+        <div class="auth-header">
+            <h2 id="auth-title">Вход</h2>
+            <p id="auth-subtitle">Добро пожаловать в Safe Path</p>
+        </div>
+        <div class="auth-tabs">
+            <div class="auth-tab active" onclick="switchAuth('login')" id="tab-login">Вход</div>
+            <div class="auth-tab" onclick="switchAuth('register')" id="tab-register">Регистрация</div>
+        </div>
+        <form id="auth-form" onsubmit="handleAuth(event)">
+            <div class="form-group" id="name-group" style="display:none">
+                <label class="form-label">Имя</label>
+                <input type="text" class="form-input" id="name-input" placeholder="Введите имя">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email / Телефон</label>
+                <input type="text" class="form-input" id="email-input" placeholder="example@mail.com" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Пароль</label>
+                <input type="password" class="form-input" id="password-input" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-primary" id="auth-submit">Войти</button>
+        </form>
+        <button class="btn-secondary" onclick="goBack()">← Назад к выбору роли</button>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 3: TEEN MAIN ==================== -->
+<div id="screen-teen-main" class="screen">
+    <div class="evidence-bar" id="evidence-bar">
+        <div class="rec-indicator"><div class="rec-dot"></div> ЗАПИСЬ</div>
+        <div id="evidence-timer">00:00</div>
+    </div>
+    <div class="teen-header">
+        <div>
+            <div class="teen-greeting" id="teen-greeting">Привет, Аня! 👋</div>
+            <div class="teen-status"><div class="status-dot"></div> Safe Path активен</div>
+        </div>
+        <div style="font-size: 24px; cursor: pointer;" onclick="showScreen('screen-teen-settings')">⚙️</div>
+    </div>
+    <div class="map-container" id="teen-map">
+        <div class="map-bg"></div>
+        <div class="map-grid"></div>
+        <div class="safe-zone" style="top: 25%; left: 20%;" onclick="selectSafeZone(this, 'Аптека')">💊</div>
+        <div class="safe-zone" style="top: 40%; left: 65%;" onclick="selectSafeZone(this, 'Кафе')">☕</div>
+        <div class="safe-zone" style="top: 60%; left: 35%;" onclick="selectSafeZone(this, 'Магазин')">🏪</div>
+        <div class="safe-zone" style="top: 75%; left: 70%;" onclick="selectSafeZone(this, 'Полиция')">👮</div>
+        <div class="user-avatar" id="user-avatar" style="top: 50%; left: 50%;">👤</div>
+        <div class="route-line" id="route-line"></div>
+    </div>
+    <div style="padding: 16px 20px;">
+        <div style="font-size: 14px; color: #888; margin-bottom: 8px;">🛡️ Safe Space рядом:</div>
+        <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;">
+            <div style="background: #1a1a2e; padding: 10px 16px; border-radius: 12px; font-size: 13px; white-space: nowrap; border: 1px solid #00d4aa;">💊 Аптека 120м</div>
+            <div style="background: #1a1a2e; padding: 10px 16px; border-radius: 12px; font-size: 13px; white-space: nowrap;">☕ Кафе 340м</div>
+            <div style="background: #1a1a2e; padding: 10px 16px; border-radius: 12px; font-size: 13px; white-space: nowrap;">🏪 Магазин 510м</div>
+        </div>
+    </div>
+    <div class="sos-section">
+        <button class="sos-btn" id="sos-btn" 
+            ontouchstart="startSOS()" 
+            onmousedown="startSOS()"
+            ontouchend="cancelSOS()"
+            onmouseup="cancelSOS()"
+            onmouseleave="cancelSOS()">
+            SOS
+        </button>
+        <div class="sos-hint">Удерживайте 1 секунду для активации</div>
+    </div>
+    <div style="height: 80px;"></div>
+    <div class="teen-nav">
+        <div class="nav-item active" onclick="teenNav('map')">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Карта</span>
+        </div>
+        <div class="nav-item" onclick="teenNav('companion')">
+            <span class="nav-icon">👥</span>
+            <span class="nav-label">Компаньон</span>
+        </div>
+        <div class="nav-item" onclick="teenNav('sos-history')">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">История</span>
+        </div>
+        <div class="nav-item" onclick="showScreen('screen-teen-settings')">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Настройки</span>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 4: TEEN COMPANION ==================== -->
+<div id="screen-teen-companion" class="screen">
+    <div class="teen-header">
+        <div class="teen-greeting">👥 Live Companion</div>
+        <div style="font-size: 24px; cursor: pointer;" onclick="showScreen('screen-teen-main')">✕</div>
+    </div>
+    <div style="padding: 16px 20px;">
+        <div style="background: linear-gradient(135deg, #1a1a2e, #2d1b69); border-radius: 16px; padding: 20px; margin-bottom: 20px;">
+            <div style="font-size: 14px; color: #888; margin-bottom: 8px;">Активные наблюдатели</div>
+            <div style="font-size: 32px; font-weight: 800; color: #00d4aa;">3</div>
+        </div>
+        <div class="companion-list">
+            <div class="companion-item">
+                <div class="companion-avatar">👩</div>
+                <div style="flex: 1;">
+                    <div class="companion-name">Мама</div>
+                    <div class="companion-status">● Онлайн</div>
+                </div>
+            </div>
+            <div class="companion-item">
+                <div class="companion-avatar">👨</div>
+                <div style="flex: 1;">
+                    <div class="companion-name">Папа</div>
+                    <div class="companion-status">● Онлайн</div>
+                </div>
+            </div>
+            <div class="companion-item">
+                <div class="companion-avatar">👩‍🦰</div>
+                <div style="flex: 1;">
+                    <div class="companion-name">Сестра Аня</div>
+                    <div class="companion-status">○ 5 мин назад</div>
+                </div>
+            </div>
+        </div>
+        <button class="btn-primary" style="margin-top: 16px;" onclick="showToast('Приглашение отправлено!')">+ Пригласить наблюдателя</button>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 5: TEEN SETTINGS ==================== -->
+<div id="screen-teen-settings" class="screen">
+    <div class="teen-header">
+        <div class="teen-greeting">⚙️ Настройки</div>
+        <div style="font-size: 24px; cursor: pointer;" onclick="showScreen('screen-teen-main')">✕</div>
+    </div>
+    <div class="settings-section">
+        <div class="settings-title">Язык / Language</div>
+        <div class="lang-selector" style="margin-bottom: 20px;">
+            <div class="lang-chip active" onclick="setLang('ru', this)">🇷🇺 Русский</div>
+            <div class="lang-chip" onclick="setLang('en', this)">🇬🇧 English</div>
+            <div class="lang-chip" onclick="setLang('kz', this)">🇰🇿 Қазақша</div>
+            <div class="lang-chip" onclick="setLang('uz', this)">🇺🇿 O'zbek</div>
+            <div class="lang-chip" onclick="setLang('tj', this)">🇹🇯 Тоҷикӣ</div>
+        </div>
+
+        <div class="settings-title">Внешний вид</div>
+        <div class="settings-item" onclick="toggleTheme()">
+            <div class="settings-left">
+                <span class="settings-icon">🌙</span>
+                <span class="settings-text">Тёмная тема</span>
+            </div>
+            <div class="toggle active" id="theme-toggle"></div>
+        </div>
+
+        <div class="settings-title">Уведомления</div>
+        <div class="settings-item" onclick="toggleSetting(this, 'push')">
+            <div class="settings-left">
+                <span class="settings-icon">🔔</span>
+                <span class="settings-text">Push-уведомления</span>
+            </div>
+            <div class="toggle active" id="push-toggle"></div>
+        </div>
+        <div class="settings-item" onclick="toggleSetting(this, 'sound')">
+            <div class="settings-left">
+                <span class="settings-icon">🔊</span>
+                <span class="settings-text">Звуковые сигналы</span>
+            </div>
+            <div class="toggle active" id="sound-toggle"></div>
+        </div>
+        <div class="settings-item" onclick="toggleSetting(this, 'vibrate')">
+            <div class="settings-left">
+                <span class="settings-icon">📳</span>
+                <span class="settings-text">Вибрация</span>
+            </div>
+            <div class="toggle active" id="vibrate-toggle"></div>
+        </div>
+
+        <div class="settings-title">Безопасность</div>
+        <div class="settings-item" onclick="toggleSetting(this, 'auto')">
+            <div class="settings-left">
+                <span class="settings-icon">🤖</span>
+                <span class="settings-text">Авто-SOS при падении</span>
+            </div>
+            <div class="toggle" id="auto-toggle"></div>
+        </div>
+        <div class="settings-item" onclick="toggleSetting(this, 'evidence')">
+            <div class="settings-left">
+                <span class="settings-icon">📹</span>
+                <span class="settings-text">Авто-запись при SOS</span>
+            </div>
+            <div class="toggle active" id="evidence-toggle"></div>
+        </div>
+
+        <div class="settings-title">Аккаунт</div>
+        <div class="settings-item" onclick="showToast('Редактирование профиля')">
+            <div class="settings-left">
+                <span class="settings-icon">👤</span>
+                <span class="settings-text">Редактировать профиль</span>
+            </div>
+            <span style="color: #888;">→</span>
+        </div>
+        <div class="settings-item" onclick="showToast('Привязан: +7 *** *** 45-67')">
+            <div class="settings-left">
+                <span class="settings-icon">📱</span>
+                <span class="settings-text">Сменить телефон</span>
+            </div>
+            <span style="color: #888;">→</span>
+        </div>
+        <div class="settings-item" onclick="logout()">
+            <div class="settings-left">
+                <span class="settings-icon">🚪</span>
+                <span class="settings-text" style="color: #ff4757;">Выйти из аккаунта</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 6: PARENT MAIN ==================== -->
+<div id="screen-parent-main" class="screen">
+    <div class="parent-header">
+        <div class="parent-title">👨‍👩‍👧 Safety Dashboard</div>
+        <div style="font-size: 13px; color: #888; margin-top: 4px;">Все дети в безопасности</div>
+    </div>
+    <div style="padding: 8px 20px;">
+        <div style="font-size: 12px; color: #888; margin-bottom: 8px;">Мои дети:</div>
+        <div class="child-card" onclick="showChildDetail('anya')">
+            <div class="child-avatar">👧</div>
+            <div class="child-info">
+                <div class="child-name">Аня, 14 лет</div>
+                <div class="child-location">📍 Школа №45, ул. Ленина</div>
+            </div>
+            <div class="child-status status-safe">Безопасно</div>
+        </div>
+        <div class="child-card" onclick="showChildDetail('dima')">
+            <div class="child-avatar">👦</div>
+            <div class="child-info">
+                <div class="child-name">Дима, 12 лет</div>
+                <div class="child-location">📍 Дом, ул. Гагарина 12</div>
+            </div>
+            <div class="child-status status-safe">Дома</div>
+        </div>
+    </div>
+    <div style="padding: 0 20px;">
+        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                <span style="font-size: 14px; color: #888;">Активность сегодня</span>
+                <span style="font-size: 14px; color: #00d4aa;">✓ Норма</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <div style="flex: 1; height: 40px; background: linear-gradient(to top, #00d4aa 80%, transparent); border-radius: 8px 8px 0 0;"></div>
+                <div style="flex: 1; height: 40px; background: linear-gradient(to top, #00d4aa 60%, transparent); border-radius: 8px 8px 0 0;"></div>
+                <div style="flex: 1; height: 40px; background: linear-gradient(to top, #00d4aa 90%, transparent); border-radius: 8px 8px 0 0;"></div>
+                <div style="flex: 1; height: 40px; background: linear-gradient(to top, #ffd93d 40%, transparent); border-radius: 8px 8px 0 0;"></div>
+                <div style="flex: 1; height: 40px; background: linear-gradient(to top, #00d4aa 70%, transparent); border-radius: 8px 8px 0 0;"></div>
+                <div style="flex: 1; height: 40px; background: linear-gradient(to top, #00d4aa 85%, transparent); border-radius: 8px 8px 0 0;"></div>
+                <div style="flex: 1; height: 40px; background: linear-gradient(to top, #00d4aa 50%, transparent); border-radius: 8px 8px 0 0;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 11px; color: #888;">
+                <span>00</span><span>04</span><span>08</span><span>12</span><span>16</span><span>20</span><span>24</span>
+            </div>
+        </div>
+        <button class="btn-primary" onclick="simulateSOS()">🚨 Симуляция тревоги (демо)</button>
+    </div>
+    <div style="height: 100px;"></div>
+    <div class="teen-nav">
+        <div class="nav-item active" onclick="parentNav('dashboard')">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Дашборд</span>
+        </div>
+        <div class="nav-item" onclick="parentNav('map')">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">Карта</span>
+        </div>
+        <div class="nav-item" onclick="parentNav('history')">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">История</span>
+        </div>
+        <div class="nav-item" onclick="showScreen('screen-parent-settings')">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Настройки</span>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 7: PARENT ALERT ==================== -->
+<div id="screen-parent-alert" class="screen">
+    <div class="alert-overlay" id="alert-overlay">
+        <div class="alert-icon">🚨</div>
+        <div class="alert-title">ТРЕВОГА!</div>
+        <div class="alert-text">Аня активировала SOS<br>Местоположение: Школа №45</div>
+        <div class="alert-actions">
+            <button class="alert-btn primary" onclick="callEmergency()">📞 Позвонить</button>
+            <button class="alert-btn secondary" onclick="showRouteToChild()">🗺️ Маршрут</button>
+        </div>
+        <button style="margin-top: 20px; background: none; border: none; color: #fff; opacity: 0.7; cursor: pointer;" onclick="dismissAlert()">Отмена</button>
+    </div>
+    <div style="padding: 20px; display: none;" id="parent-alert-content">
+        <div class="teen-header">
+            <div class="teen-greeting" style="color: #ff4757;">⚠️ Тревога: Аня</div>
+            <div style="font-size: 24px; cursor: pointer;" onclick="showScreen('screen-parent-main')">✕</div>
+        </div>
+        <div class="map-container" style="height: 40vh;">
+            <div class="map-bg"></div>
+            <div class="map-grid"></div>
+            <div class="safe-zone active" style="top: 30%; left: 30%;">💊</div>
+            <div class="user-avatar" style="top: 50%; left: 50%; background: linear-gradient(135deg, #ff4757, #ff6348); animation: pulse 1s infinite;">👧</div>
+        </div>
+        <div style="padding: 16px 20px;">
+            <div style="background: rgba(255,71,87,0.1); border: 1px solid #ff4757; border-radius: 16px; padding: 20px; margin-bottom: 16px;">
+                <div style="font-size: 14px; color: #ff4757; font-weight: 700; margin-bottom: 8px;">⚠️ SOS активирован</div>
+                <div style="font-size: 13px; color: #888; line-height: 1.6;">
+                    Время: 14:32<br>
+                    Место: ул. Ленина, 45 (Школа)<br>
+                    Ближайший Safe Space: Аптека (120м)
+                </div>
+            </div>
+            <button class="btn-primary" style="background: linear-gradient(135deg, #ff4757, #ff6348); margin-bottom: 8px;" onclick="callEmergency()">📞 Экстренный вызов</button>
+            <button class="btn-primary" onclick="showRouteToChild()">🗺️ Построить маршрут</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 8: PARENT SETTINGS ==================== -->
+<div id="screen-parent-settings" class="screen">
+    <div class="teen-header">
+        <div class="teen-greeting">⚙️ Настройки</div>
+        <div style="font-size: 24px; cursor: pointer;" onclick="showScreen('screen-parent-main')">✕</div>
+    </div>
+    <div class="settings-section">
+        <div class="settings-title">Язык</div>
+        <div class="lang-selector" style="margin-bottom: 20px;">
+            <div class="lang-chip active" onclick="setLang('ru', this)">🇷🇺 Русский</div>
+            <div class="lang-chip" onclick="setLang('en', this)">🇬🇧 English</div>
+            <div class="lang-chip" onclick="setLang('kz', this)">🇰🇿 Қазақша</div>
+            <div class="lang-chip" onclick="setLang('uz', this)">🇺🇿 O'zbek</div>
+            <div class="lang-chip" onclick="setLang('tj', this)">🇹🇯 Тоҷикӣ</div>
+        </div>
+
+        <div class="settings-title">Дети</div>
+        <div class="settings-item" onclick="showToast('Добавление ребёнка')">
+            <div class="settings-left">
+                <span class="settings-icon">➕</span>
+                <span class="settings-text">Добавить ребёнка</span>
+            </div>
+            <span style="color: #888;">→</span>
+        </div>
+        <div class="settings-item" onclick="showToast('Геозоны настроены')">
+            <div class="settings-left">
+                <span class="settings-icon">📍</span>
+                <span class="settings-text">Геозоны безопасности</span>
+            </div>
+            <span style="color: #888;">→</span>
+        </div>
+
+        <div class="settings-title">Уведомления</div>
+        <div class="settings-item" onclick="toggleSetting(this, 'parent-push')">
+            <div class="settings-left">
+                <span class="settings-icon">🔔</span>
+                <span class="settings-text">Push-уведомления</span>
+            </div>
+            <div class="toggle active" id="parent-push-toggle"></div>
+        </div>
+        <div class="settings-item" onclick="toggleSetting(this, 'parent-sos')">
+            <div class="settings-left">
+                <span class="settings-icon">🚨</span>
+                <span class="settings-text">Только SOS-тревоги</span>
+            </div>
+            <div class="toggle" id="parent-sos-toggle"></div>
+        </div>
+
+        <div class="settings-title">Аккаунт</div>
+        <div class="settings-item" onclick="logout()">
+            <div class="settings-left">
+                <span class="settings-icon">🚪</span>
+                <span class="settings-text" style="color: #ff4757;">Выйти</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== SCREEN 9: BUSINESS ==================== -->
+<div id="screen-business" class="screen">
+    <div class="biz-header">
+        <div style="font-size: 22px; font-weight: 700;">🏪 Safe Path Business</div>
+        <div style="font-size: 13px; color: #888; margin-top: 4px;">Партнёрская программа</div>
+    </div>
+    <div class="biz-stats">
+        <div class="stat-card">
+            <div class="stat-value">12</div>
+            <div class="stat-label">Тревог сегодня</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">98%</div>
+            <div class="stat-label">Решено</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">4.9★</div>
+            <div class="stat-label">ESG-рейтинг</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">2.3к</div>
+            <div class="stat-label">Safe Visits</div>
+        </div>
+    </div>
+    <div style="padding: 0 20px;">
+        <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">📋 Протокол действий</div>
+        <div class="protocol-card">
+            <div class="protocol-step">
+                <div class="step-num">1</div>
+                <div class="step-text">Принять тревогу в системе</div>
+            </div>
+            <div class="protocol-step">
+                <div class="step-num">2</div>
+                <div class="step-text">Убедиться в безопасности зоны</div>
+            </div>
+            <div class="protocol-step">
+                <div class="step-num">3</div>
+                <div class="step-text">Связаться с подростком</div>
+            </div>
+            <div class="protocol-step">
+                <div class="step-num">4</div>
+                <div class="step-text">Вызвать службы при необходимости</div>
+            </div>
+            <div class="protocol-step">
+                <div class="step-num">5</div>
+                <div class="step-text">Зафиксировать результат в системе</div>
+            </div>
+        </div>
+        <button class="btn-primary" style="margin-bottom: 16px;" onclick="showToast('Тренинг запущен')">▶️ Пройти тренинг</button>
+        <button class="btn-secondary" onclick="showToast('Отчёт сформирован')">📊 ESG-отчёт за месяц</button>
+    </div>
+    <div style="height: 40px;"></div>
+    <div class="teen-nav">
+        <div class="nav-item active" onclick="showScreen('screen-business')">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Статистика</span>
+        </div>
+        <div class="nav-item" onclick="showToast('История тревог')">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">Тревоги</span>
+        </div>
+        <div class="nav-item" onclick="showToast('Настройки бизнеса')">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Настройки</span>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== COUNTDOWN OVERLAY ==================== -->
+<div class="countdown-overlay" id="countdown-overlay">
+    <div class="countdown-ring" id="countdown-num">5</div>
+    <div class="countdown-text">Отправка тревоги...</div>
+    <button class="countdown-cancel" onclick="cancelSOS()">❌ Отменить</button>
+</div>
+
+<!-- ==================== TOAST ==================== -->
+<div class="toast" id="toast"></div>
+
+<script>
+// === STATE ===
+let currentRole = null;
+let currentScreen = 'screen-role';
+let sosTimer = null;
+let sosCountdown = null;
+let evidenceTimer = null;
+let evidenceSeconds = 0;
+
+// === SCREEN MANAGEMENT ===
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => {
+        s.classList.remove('active');
+    });
+    const screen = document.getElementById(screenId);
+    if (screen) {
+        screen.classList.add('active');
+        currentScreen = screenId;
+    }
+}
+
+function goBack() {
+    if (currentScreen === 'screen-auth') {
+        showScreen('screen-role');
+    } else if (currentScreen.startsWith('screen-teen')) {
+        showScreen('screen-teen-main');
+    } else if (currentScreen.startsWith('screen-parent')) {
+        showScreen('screen-parent-main');
+    }
+}
+
+// === ROLE SELECT ===
+function selectRole(role) {
+    currentRole = role;
+    showToast(role === 'teen' ? 'Выбрана роль: Подросток' : role === 'parent' ? 'Выбрана роль: Родитель' : 'Выбрана роль: Бизнес');
+    setTimeout(() => {
+        showScreen('screen-auth');
+        document.getElementById('auth-title').textContent = 'Вход';
+        document.getElementById('auth-subtitle').textContent = role === 'teen' ? 'Добро пожаловать, подросток!' : role === 'parent' ? 'Контроль безопасности детей' : 'Портал бизнес-партнёра';
+    }, 600);
+}
+
+// === AUTH ===
+let authMode = 'login';
+function switchAuth(mode) {
+    authMode = mode;
+    document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+    document.getElementById('tab-register').classList.toggle('active', mode === 'register');
+    document.getElementById('name-group').style.display = mode === 'register' ? 'block' : 'none';
+    document.getElementById('auth-submit').textContent = mode === 'login' ? 'Войти' : 'Зарегистрироваться';
+    document.getElementById('auth-title').textContent = mode === 'login' ? 'Вход' : 'Регистрация';
+}
+
+function handleAuth(e) {
+    e.preventDefault();
+    const email = document.getElementById('email-input').value;
+    const pass = document.getElementById('password-input').value;
+    if (!email || !pass) {
+        showToast('Заполните все поля!');
+        return;
+    }
+    showToast(authMode === 'login' ? 'Вход выполнен!' : 'Регистрация успешна!');
+    setTimeout(() => {
+        if (currentRole === 'teen') {
+            showScreen('screen-teen-main');
+        } else if (currentRole === 'parent') {
+            showScreen('screen-parent-main');
+        } else if (currentRole === 'business') {
+            showScreen('screen-business');
+        }
+    }, 1000);
+}
+
+// === TEEN NAV ===
+function teenNav(tab) {
+    document.querySelectorAll('#screen-teen-main .nav-item').forEach(i => i.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    if (tab === 'companion') {
+        showScreen('screen-teen-companion');
+    } else if (tab === 'sos-history') {
+        showToast('История SOS загружена');
+    }
+}
+
+// === SAFE ZONE ===
+function selectSafeZone(el, name) {
+    document.querySelectorAll('.safe-zone').forEach(z => z.classList.remove('active'));
+    el.classList.add('active');
+    showToast('Маршрут к ' + name + ' построен');
+
+    const avatar = document.getElementById('user-avatar');
+    const rect = el.getBoundingClientRect();
+    const mapRect = document.getElementById('teen-map').getBoundingClientRect();
+    avatar.style.top = (rect.top - mapRect.top + 12) + 'px';
+    avatar.style.left = (rect.left - mapRect.left + 12) + 'px';
+}
+
+// === SOS ===
+let sosPressTimer = null;
+function startSOS() {
+    sosPressTimer = setTimeout(() => {
+        document.getElementById('countdown-overlay').classList.add('active');
+        let count = 5;
+        document.getElementById('countdown-num').textContent = count;
+        sosCountdown = setInterval(() => {
+            count--;
+            document.getElementById('countdown-num').textContent = count;
+            if (count <= 0) {
+                clearInterval(sosCountdown);
+                document.getElementById('countdown-overlay').classList.remove('active');
+                activateSOS();
+            }
+        }, 1000);
+    }, 800);
+}
+
+function cancelSOS() {
+    if (sosPressTimer) clearTimeout(sosPressTimer);
+    if (sosCountdown) clearInterval(sosCountdown);
+    document.getElementById('countdown-overlay').classList.remove('active');
+}
+
+function activateSOS() {
+    showToast('🚨 SOS ОТПРАВЛЕН!');
+    document.getElementById('evidence-bar').classList.add('active');
+    evidenceSeconds = 0;
+    evidenceTimer = setInterval(() => {
+        evidenceSeconds++;
+        const m = Math.floor(evidenceSeconds / 60).toString().padStart(2, '0');
+        const s = (evidenceSeconds % 60).toString().padStart(2, '0');
+        document.getElementById('evidence-timer').textContent = m + ':' + s;
+    }, 1000);
+    setTimeout(() => {
+        showScreen('screen-parent-alert');
+        document.getElementById('alert-overlay').classList.add('active');
+        document.getElementById('parent-alert-content').style.display = 'block';
+    }, 1500);
+}
+
+// === PARENT ===
+function parentNav(tab) {
+    if (tab === 'map') {
+        showToast('Карта детей загружена');
+    } else if (tab === 'history') {
+        showToast('История активности');
+    }
+}
+
+function showChildDetail(child) {
+    showToast('Детали: ' + (child === 'anya' ? 'Аня' : 'Дима'));
+}
+
+function simulateSOS() {
+    showScreen('screen-parent-alert');
+    document.getElementById('alert-overlay').classList.add('active');
+    document.getElementById('parent-alert-content').style.display = 'block';
+}
+
+function dismissAlert() {
+    document.getElementById('alert-overlay').classList.remove('active');
+    showScreen('screen-parent-main');
+}
+
+function callEmergency() {
+    showToast('Вызов экстренных служб...');
+}
+
+function showRouteToChild() {
+    showToast('Маршрут построен (1.2 км, 4 мин)');
+}
+
+// === SETTINGS ===
+function setLang(lang, el) {
+    document.querySelectorAll('.lang-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    const names = {ru: 'Русский', en: 'English', kz: 'Қазақша', uz: "O'zbek", tj: 'Тоҷикӣ'};
+    showToast('Язык: ' + names[lang]);
+}
+
+function toggleTheme() {
+    const t = document.getElementById('theme-toggle');
+    t.classList.toggle('active');
+    showToast(t.classList.contains('active') ? 'Тёмная тема' : 'Светлая тема');
+}
+
+function toggleSetting(el, id) {
+    const toggle = el.querySelector('.toggle');
+    toggle.classList.toggle('active');
+    showToast(toggle.classList.contains('active') ? 'Включено' : 'Выключено');
+}
+
+function logout() {
+    showToast('Выход выполнен');
+    setTimeout(() => {
+        currentRole = null;
+        document.getElementById('email-input').value = '';
+        document.getElementById('password-input').value = '';
+        showScreen('screen-role');
+    }, 1000);
+}
+
+// === TOAST ===
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// === INIT ===
+document.addEventListener('DOMContentLoaded', () => {
+    showScreen('screen-role');
+});
+</script>
+</body>
+</html>
