@@ -796,7 +796,7 @@
             <span class="nav-icon">👥</span>
             <span class="nav-label">Компаньон</span>
         </div>
-        <div class="nav-item" onclick="showScreen('screen-teen-history')">
+        <div class="nav-item" onclick="teenNav('sos-history')">
             <span class="nav-icon">📋</span>
             <span class="nav-label">История</span>
         </div>
@@ -841,7 +841,7 @@
                 </div>
             </div>
         </div>
-        <button class="btn-primary" style="margin-top: 16px;" onclick="showScreen('screen-teen-companion'); setTimeout(()=>showToast('Приглашение отправлено!'), 400)">+ Пригласить наблюдателя</button>
+        <button class="btn-primary" style="margin-top: 16px;" onclick="showToast('Приглашение отправлено!')">+ Пригласить наблюдателя</button>
     </div>
 </div>
 
@@ -910,14 +910,14 @@
         </div>
 
         <div class="settings-title">Аккаунт</div>
-        <div class="settings-item" onclick="showScreen('screen-teen-profile')">
+        <div class="settings-item" onclick="showToast('Редактирование профиля')">
             <div class="settings-left">
                 <span class="settings-icon">👤</span>
                 <span class="settings-text">Редактировать профиль</span>
             </div>
             <span style="color: #888;">→</span>
         </div>
-        <div class="settings-item" onclick="showScreen('screen-teen-profile')">
+        <div class="settings-item" onclick="showToast('Привязан: +7 *** *** 45-67')">
             <div class="settings-left">
                 <span class="settings-icon">📱</span>
                 <span class="settings-text">Сменить телефон</span>
@@ -985,11 +985,11 @@
             <span class="nav-icon">📊</span>
             <span class="nav-label">Дашборд</span>
         </div>
-        <div class="nav-item" onclick="showScreen('screen-parent-map')">
+        <div class="nav-item" onclick="parentNav('map')">
             <span class="nav-icon">🗺️</span>
             <span class="nav-label">Карта</span>
         </div>
-        <div class="nav-item" onclick="showScreen('screen-parent-history')">
+        <div class="nav-item" onclick="parentNav('history')">
             <span class="nav-icon">📋</span>
             <span class="nav-label">История</span>
         </div>
@@ -1055,14 +1055,14 @@
         </div>
 
         <div class="settings-title">Дети</div>
-        <div class="settings-item" onclick="showScreen('screen-parent-add-child')">
+        <div class="settings-item" onclick="showToast('Добавление ребёнка')">
             <div class="settings-left">
                 <span class="settings-icon">➕</span>
                 <span class="settings-text">Добавить ребёнка</span>
             </div>
             <span style="color: #888;">→</span>
         </div>
-        <div class="settings-item" onclick="showScreen('screen-parent-geozones')">
+        <div class="settings-item" onclick="showToast('Геозоны настроены')">
             <div class="settings-left">
                 <span class="settings-icon">📍</span>
                 <span class="settings-text">Геозоны безопасности</span>
@@ -1144,8 +1144,8 @@
                 <div class="step-text">Зафиксировать результат в системе</div>
             </div>
         </div>
-        <button class="btn-primary" style="margin-bottom: 16px;" onclick="showModal('Тренинг запущен')">▶️ Пройти тренинг</button>
-        <button class="btn-secondary" onclick="showModal('Отчёт сформирован')">📊 ESG-отчёт за месяц</button>
+        <button class="btn-primary" style="margin-bottom: 16px;" onclick="showToast('Тренинг запущен')">▶️ Пройти тренинг</button>
+        <button class="btn-secondary" onclick="showToast('Отчёт сформирован')">📊 ESG-отчёт за месяц</button>
     </div>
     <div style="height: 40px;"></div>
     <div class="teen-nav">
@@ -1153,489 +1153,13 @@
             <span class="nav-icon">📊</span>
             <span class="nav-label">Статистика</span>
         </div>
-        <div class="nav-item" onclick="showScreen('screen-business-alerts')">
+        <div class="nav-item" onclick="showToast('История тревог')">
             <span class="nav-icon">📋</span>
             <span class="nav-label">Тревоги</span>
         </div>
-        <div class="nav-item" onclick="showScreen('screen-business-settings')">
+        <div class="nav-item" onclick="showToast('Настройки бизнеса')">
             <span class="nav-icon">⚙️</span>
             <span class="nav-label">Настройки</span>
-        </div>
-    </div>
-</div>
-
-
-<!-- ==================== SCREEN: TEEN PROFILE ==================== -->
-<div id="screen-teen-profile" class="screen">
-    <div class="teen-header">
-        <div class="teen-greeting">👤 Редактировать профиль</div>
-        <div style="font-size: 24px; cursor: pointer;" onclick="showScreen('screen-teen-settings')">✕</div>
-    </div>
-    <div style="padding: 24px 20px;">
-        <div style="text-align: center; margin-bottom: 24px;">
-            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #00d4aa, #00a8e8); margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 36px;">👤</div>
-            <div style="font-size: 18px; font-weight: 700;">Аня</div>
-            <div style="font-size: 13px; color: #888;">14 лет</div>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Имя</label>
-            <input type="text" class="form-input" value="Аня" id="profile-name">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Возраст</label>
-            <input type="number" class="form-input" value="14" id="profile-age">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Телефон</label>
-            <input type="tel" class="form-input" value="+7 777 123-45-67" id="profile-phone">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-input" value="anya@example.com" id="profile-email">
-        </div>
-        <button class="btn-primary" onclick="saveProfile()">💾 Сохранить изменения</button>
-    </div>
-</div>
-
-
-<!-- ==================== SCREEN: PARENT ADD CHILD ==================== -->
-<div id="screen-parent-add-child" class="screen">
-    <div class="teen-header">
-        <div class="teen-greeting">➕ Добавить ребёнка</div>
-        <div style="font-size: 24px; cursor: pointer;" onclick="showScreen('screen-parent-settings')">✕</div>
-    </div>
-    <div style="padding: 24px 20px;">
-        <div style="text-align: center; margin-bottom: 24px;">
-            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #ff6b6b, #feca57); margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 36px;">➕</div>
-            <div style="font-size: 16px; color: #888;">Введите код приглашения ребёнка</div>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Код приглашения</label>
-            <input type="text" class="form-input" placeholder="XXXX-XXXX" id="invite-code" style="text-align: center; font-size: 24px; letter-spacing: 4px;">
-        </div>
-        <div style="text-align: center; margin: 16px 0; color: #888; font-size: 13px;">
-            Ребёнок может найти код в своём приложении:<br>
-            Настройки → Пригласить наблюдателя
-        </div>
-        <button class="btn-primary" onclick="addChild()">🔗 Привязать ребёнка</button>
-        <button class="btn-secondary" onclick="showScreen('screen-parent-settings')">Отмена</button>
-    </div>
-</div>
-
-
-<!-- ==================== SCREEN: PARENT GEOZONES ==================== -->
-<div id="screen-parent-geozones" class="screen">
-    <div class="teen-header">
-        <div class="teen-greeting">📍 Геозоны безопасности</div>
-        <div style="font-size: 24px; cursor: pointer;" onclick="showScreen('screen-parent-settings')">✕</div>
-    </div>
-    <div style="padding: 16px 20px;">
-        <div style="font-size: 14px; color: #888; margin-bottom: 16px;">Безопасные зоны для детей:</div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid #00d4aa;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="font-weight: 700;">🏠 Дом</span>
-                <span style="font-size: 12px; color: #00d4aa;">Активна</span>
-            </div>
-            <div style="font-size: 13px; color: #888;">ул. Гагарина, 12 · Радиус 100м</div>
-        </div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid #00d4aa;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="font-weight: 700;">🏫 Школа</span>
-                <span style="font-size: 12px; color: #00d4aa;">Активна</span>
-            </div>
-            <div style="font-size: 13px; color: #888;">Школа №45, ул. Ленина · Радиус 150м</div>
-        </div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid #2a2a4a;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="font-weight: 700;">🏊 Бассейн</span>
-                <span style="font-size: 12px; color: #888;">Неактивна</span>
-            </div>
-            <div style="font-size: 13px; color: #888;">ул. Спортивная, 8 · Радиус 80м</div>
-        </div>
-
-        <button class="btn-primary" style="margin-top: 8px;" onclick="showModal('Добавление новой геозоны')">+ Добавить геозону</button>
-    </div>
-</div>
-
-
-<!-- ==================== SCREEN: BUSINESS ALERTS HISTORY ==================== -->
-<div id="screen-business-alerts" class="screen">
-    <div class="biz-header">
-        <div style="font-size: 22px; font-weight: 700;">📋 История тревог</div>
-        <div style="font-size: 13px; color: #888; margin-top: 4px;">Последние события</div>
-    </div>
-    <div style="padding: 16px 20px;">
-        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <div style="flex: 1; background: #1a1a2e; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #00d4aa;">
-                <div style="font-size: 24px; font-weight: 800; color: #00d4aa;">12</div>
-                <div style="font-size: 11px; color: #888;">Сегодня</div>
-            </div>
-            <div style="flex: 1; background: #1a1a2e; padding: 12px; border-radius: 12px; text-align: center;">
-                <div style="font-size: 24px; font-weight: 800; color: #ffd93d;">48</div>
-                <div style="font-size: 11px; color: #888;">Неделя</div>
-            </div>
-            <div style="flex: 1; background: #1a1a2e; padding: 12px; border-radius: 12px; text-align: center;">
-                <div style="font-size: 24px; font-weight: 800;">156</div>
-                <div style="font-size: 11px; color: #888;">Месяц</div>
-            </div>
-        </div>
-
-        <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">🕐 Сегодня</div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 3px solid #00d4aa;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-weight: 700;">✅ Тревога решена</span>
-                <span style="font-size: 12px; color: #888;">14:32</span>
-            </div>
-            <div style="font-size: 13px; color: #888; line-height: 1.5;">
-                Подросток: Аня, 14 лет<br>
-                Место: Аптека №7, ул. Ленина<br>
-                Действие: Сотрудник проверил зону, всё в порядке
-            </div>
-        </div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 3px solid #00d4aa;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-weight: 700;">✅ Тревога решена</span>
-                <span style="font-size: 12px; color: #888;">12:15</span>
-            </div>
-            <div style="font-size: 13px; color: #888; line-height: 1.5;">
-                Подросток: Дима, 12 лет<br>
-                Место: Магазин «Продукты»<br>
-                Действие: Родитель забрал ребёнка
-            </div>
-        </div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 3px solid #ffd93d;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-weight: 700; color: #ffd93d;">⏳ В обработке</span>
-                <span style="font-size: 12px; color: #888;">10:45</span>
-            </div>
-            <div style="font-size: 13px; color: #888; line-height: 1.5;">
-                Подросток: Мария, 15 лет<br>
-                Место: Кафе «Уют»<br>
-                Действие: Ожидает подтверждения от родителя
-            </div>
-        </div>
-
-        <div style="font-size: 14px; font-weight: 700; margin: 20px 0 12px;">📅 Вчера</div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 3px solid #ff4757;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-weight: 700; color: #ff4757;">🚨 Экстренный вызов</span>
-                <span style="font-size: 12px; color: #888;">18:20</span>
-            </div>
-            <div style="font-size: 13px; color: #888; line-height: 1.5;">
-                Подросток: Кирилл, 16 лет<br>
-                Место: Парк Горького<br>
-                Действие: Вызвана полиция, ребёнок в безопасности
-            </div>
-        </div>
-    </div>
-    <div style="height: 80px;"></div>
-    <div class="teen-nav">
-        <div class="nav-item" onclick="showScreen('screen-business')">
-            <span class="nav-icon">📊</span>
-            <span class="nav-label">Статистика</span>
-        </div>
-        <div class="nav-item active" onclick="showScreen('screen-business-alerts')">
-            <span class="nav-icon">📋</span>
-            <span class="nav-label">Тревоги</span>
-        </div>
-        <div class="nav-item" onclick="showScreen('screen-business-settings')">
-            <span class="nav-icon">⚙️</span>
-            <span class="nav-label">Настройки</span>
-        </div>
-    </div>
-</div>
-
-<!-- ==================== SCREEN: BUSINESS SETTINGS ==================== -->
-<div id="screen-business-settings" class="screen">
-    <div class="biz-header">
-        <div style="font-size: 22px; font-weight: 700;">⚙️ Настройки бизнеса</div>
-        <div style="font-size: 13px; color: #888; margin-top: 4px;">Параметры Safe Space</div>
-    </div>
-    <div class="settings-section">
-        <div class="settings-title">Профиль заведения</div>
-        <div class="settings-item" onclick="showModal('Название: Аптека №7')">
-            <div class="settings-left">
-                <span class="settings-icon">🏪</span>
-                <span class="settings-text">Название заведения</span>
-            </div>
-            <span style="color: #888; font-size: 13px;">Аптека №7 →</span>
-        </div>
-        <div class="settings-item" onclick="showModal('Адрес: ул. Ленина, 45')">
-            <div class="settings-left">
-                <span class="settings-icon">📍</span>
-                <span class="settings-text">Адрес</span>
-            </div>
-            <span style="color: #888; font-size: 13px;">ул. Ленина, 45 →</span>
-        </div>
-        <div class="settings-item" onclick="showModal('Режим: 24/7')">
-            <div class="settings-left">
-                <span class="settings-icon">🕐</span>
-                <span class="settings-text">Часы работы</span>
-            </div>
-            <span style="color: #888; font-size: 13px;">24/7 →</span>
-        </div>
-
-        <div class="settings-title">Оповещения</div>
-        <div class="settings-item" onclick="toggleSetting(this, 'biz-push')">
-            <div class="settings-left">
-                <span class="settings-icon">🔔</span>
-                <span class="settings-text">Push-уведомления</span>
-            </div>
-            <div class="toggle active" id="biz-push-toggle"></div>
-        </div>
-        <div class="settings-item" onclick="toggleSetting(this, 'biz-sound')">
-            <div class="settings-left">
-                <span class="settings-icon">🔊</span>
-                <span class="settings-text">Звуковой сигнал тревоги</span>
-            </div>
-            <div class="toggle active" id="biz-sound-toggle"></div>
-        </div>
-        <div class="settings-item" onclick="toggleSetting(this, 'biz-auto')">
-            <div class="settings-left">
-                <span class="settings-icon">🤖</span>
-                <span class="settings-text">Авто-ответ на тревогу</span>
-            </div>
-            <div class="toggle" id="biz-auto-toggle"></div>
-        </div>
-
-        <div class="settings-title">Протокол</div>
-        <div class="settings-item" onclick="showModal('Протокол обновлён')">
-            <div class="settings-left">
-                <span class="settings-icon">📋</span>
-                <span class="settings-text">Редактировать протокол</span>
-            </div>
-            <span style="color: #888;">→</span>
-        </div>
-        <div class="settings-item" onclick="showModal('Тренинг назначен')">
-            <div class="settings-left">
-                <span class="settings-icon">🎓</span>
-                <span class="settings-text">Обучение персонала</span>
-            </div>
-            <span style="color: #888;">→</span>
-        </div>
-
-        <div class="settings-title">ESG и отчётность</div>
-        <div class="settings-item" onclick="showModal('ESG-отчёт за квартал')">
-            <div class="settings-left">
-                <span class="settings-icon">📊</span>
-                <span class="settings-text">ESG-отчёт за квартал</span>
-            </div>
-            <span style="color: #888;">→</span>
-        </div>
-        <div class="settings-item" onclick="showModal('Сертификат загружен')">
-            <div class="settings-left">
-                <span class="settings-icon">🏆</span>
-                <span class="settings-text">Safe Space сертификат</span>
-            </div>
-            <span style="color: #888;">→</span>
-        </div>
-
-        <div class="settings-title">Язык</div>
-        <div class="lang-selector" style="margin-bottom: 20px;">
-            <div class="lang-chip active" onclick="setLang('ru', this)">🇷🇺 Русский</div>
-            <div class="lang-chip" onclick="setLang('en', this)">🇬🇧 English</div>
-            <div class="lang-chip" onclick="setLang('kz', this)">🇰🇿 Қазақша</div>
-        </div>
-
-        <div class="settings-title">Аккаунт</div>
-        <div class="settings-item" onclick="showModal('Поддержка: +7 777 123-45-67')">
-            <div class="settings-left">
-                <span class="settings-icon">🎧</span>
-                <span class="settings-text">Техподдержка</span>
-            </div>
-            <span style="color: #888;">→</span>
-        </div>
-        <div class="settings-item" onclick="logout()">
-            <div class="settings-left">
-                <span class="settings-icon">🚪</span>
-                <span class="settings-text" style="color: #ff4757;">Выйти из аккаунта</span>
-            </div>
-        </div>
-    </div>
-    <div style="height: 80px;"></div>
-    <div class="teen-nav">
-        <div class="nav-item" onclick="showScreen('screen-business')">
-            <span class="nav-icon">📊</span>
-            <span class="nav-label">Статистика</span>
-        </div>
-        <div class="nav-item" onclick="showScreen('screen-business-alerts')">
-            <span class="nav-icon">📋</span>
-            <span class="nav-label">Тревоги</span>
-        </div>
-        <div class="nav-item active" onclick="showScreen('screen-business-settings')">
-            <span class="nav-icon">⚙️</span>
-            <span class="nav-label">Настройки</span>
-        </div>
-    </div>
-</div>
-
-
-<!-- ==================== SCREEN: TEEN SOS HISTORY ==================== -->
-<div id="screen-teen-history" class="screen">
-    <div class="teen-header">
-        <div class="teen-greeting">📋 История SOS</div>
-        <div style="font-size: 24px; cursor: pointer;" onclick="showScreen('screen-teen-main')">✕</div>
-    </div>
-    <div style="padding: 16px 20px;">
-        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <div style="flex: 1; background: #1a1a2e; padding: 12px; border-radius: 12px; text-align: center;">
-                <div style="font-size: 24px; font-weight: 800; color: #00d4aa;">0</div>
-                <div style="font-size: 11px; color: #888;">Активных</div>
-            </div>
-            <div style="flex: 1; background: #1a1a2e; padding: 12px; border-radius: 12px; text-align: center;">
-                <div style="font-size: 24px; font-weight: 800;">3</div>
-                <div style="font-size: 11px; color: #888;">Всего</div>
-            </div>
-        </div>
-
-        <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">🕐 Последние события</div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 3px solid #00d4aa;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-weight: 700; color: #00d4aa;">✅ Отменено пользователем</span>
-                <span style="font-size: 12px; color: #888;">Сегодня 14:30</span>
-            </div>
-            <div style="font-size: 13px; color: #888; line-height: 1.5;">
-                Тип: Smart SOS<br>
-                Место: Школа №45<br>
-                Действие: Отменено за 2 сек до отправки
-            </div>
-        </div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 3px solid #00d4aa;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-weight: 700; color: #00d4aa;">✅ Решено</span>
-                <span style="font-size: 12px; color: #888;">Вчера 18:15</span>
-            </div>
-            <div style="font-size: 13px; color: #888; line-height: 1.5;">
-                Тип: Smart SOS<br>
-                Место: Кафе «Уют»<br>
-                Действие: Родитель прибыл через 4 мин
-            </div>
-        </div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 3px solid #ffd93d;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-weight: 700; color: #ffd93d;">⚠️ Ложная тревога</span>
-                <span style="font-size: 12px; color: #888;">2 дня назад</span>
-            </div>
-            <div style="font-size: 13px; color: #888; line-height: 1.5;">
-                Тип: Авто-SOS (падение)<br>
-                Место: Парк Горького<br>
-                Действие: Подросток подтвердил, что всё ок
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<!-- ==================== SCREEN: PARENT MAP ==================== -->
-<div id="screen-parent-map" class="screen">
-    <div class="teen-header">
-        <div class="teen-greeting">🗺️ Карта детей</div>
-        <div style="font-size: 24px; cursor: pointer;" onclick="showScreen('screen-parent-main')">✕</div>
-    </div>
-    <div class="map-container" style="height: 60vh;">
-        <div class="map-bg"></div>
-        <div class="map-grid"></div>
-        <div class="safe-zone" style="top: 20%; left: 25%;">💊</div>
-        <div class="safe-zone" style="top: 35%; left: 60%;">☕</div>
-        <div class="safe-zone" style="top: 55%; left: 40%;">🏪</div>
-        <div class="user-avatar" style="top: 30%; left: 30%; background: linear-gradient(135deg, #ff6b6b, #feca57);">👧</div>
-        <div class="user-avatar" style="top: 50%; left: 55%; background: linear-gradient(135deg, #667eea, #764ba2); width: 30px; height: 30px; font-size: 14px;">👦</div>
-    </div>
-    <div style="padding: 16px 20px;">
-        <div class="child-card" style="margin: 0 0 8px 0;">
-            <div class="child-avatar">👧</div>
-            <div class="child-info">
-                <div class="child-name">Аня, 14 лет</div>
-                <div class="child-location">📍 Школа №45, 120м от Safe Space</div>
-            </div>
-            <div class="child-status status-safe">Ок</div>
-        </div>
-        <div class="child-card" style="margin: 0;">
-            <div class="child-avatar">👦</div>
-            <div class="child-info">
-                <div class="child-name">Дима, 12 лет</div>
-                <div class="child-location">📍 Дом, ул. Гагарина 12</div>
-            </div>
-            <div class="child-status status-safe">Дома</div>
-        </div>
-    </div>
-</div>
-
-
-<!-- ==================== SCREEN: PARENT HISTORY ==================== -->
-<div id="screen-parent-history" class="screen">
-    <div class="teen-header">
-        <div class="teen-greeting">📋 История активности</div>
-        <div style="font-size: 24px; cursor: pointer;" onclick="showScreen('screen-parent-main')">✕</div>
-    </div>
-    <div style="padding: 16px 20px;">
-        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <div style="flex: 1; background: #1a1a2e; padding: 12px; border-radius: 12px; text-align: center;">
-                <div style="font-size: 24px; font-weight: 800; color: #00d4aa;">0</div>
-                <div style="font-size: 11px; color: #888;">Тревог</div>
-            </div>
-            <div style="flex: 1; background: #1a1a2e; padding: 12px; border-radius: 12px; text-align: center;">
-                <div style="font-size: 24px; font-weight: 800;">47</div>
-                <div style="font-size: 11px; color: #888;">Проверок</div>
-            </div>
-            <div style="flex: 1; background: #1a1a2e; padding: 12px; border-radius: 12px; text-align: center;">
-                <div style="font-size: 24px; font-weight: 800;">12</div>
-                <div style="font-size: 11px; color: #888;">Safe Visits</div>
-            </div>
-        </div>
-
-        <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">🕐 Сегодня</div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 3px solid #00d4aa;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-weight: 700;">👧 Аня вышла из школы</span>
-                <span style="font-size: 12px; color: #888;">14:35</span>
-            </div>
-            <div style="font-size: 13px; color: #888;">📍 Школа №45 → Дом · Маршрут безопасен</div>
-        </div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 3px solid #00d4aa;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-weight: 700;">👦 Дима пришёл домой</span>
-                <span style="font-size: 12px; color: #888;">13:20</span>
-            </div>
-            <div style="font-size: 13px; color: #888;">📍 Дом, ул. Гагарина 12 · Геозона активна</div>
-        </div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 3px solid #ffd93d;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-weight: 700; color: #ffd93d;">⚠️ Аня задерживается</span>
-                <span style="font-size: 12px; color: #888;">12:45</span>
-            </div>
-            <div style="font-size: 13px; color: #888;">📍 Кафе «Уют» · Время в пути превышено на 15 мин</div>
-        </div>
-
-        <div style="font-size: 14px; font-weight: 700; margin: 20px 0 12px;">📅 Вчера</div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 3px solid #00d4aa;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-weight: 700;">✅ SOS отменён</span>
-                <span style="font-size: 12px; color: #888;">18:10</span>
-            </div>
-            <div style="font-size: 13px; color: #888;">👧 Аня · Отменено за 2 сек · Ложная тревога</div>
-        </div>
-
-        <div style="background: #1a1a2e; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 3px solid #00d4aa;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-weight: 700;">🏪 Safe Space посещён</span>
-                <span style="font-size: 12px; color: #888;">16:30</span>
-            </div>
-            <div style="font-size: 13px; color: #888;">👧 Аня · Аптека №7 · Рейтинг 5★</div>
         </div>
     </div>
 </div>
@@ -1863,33 +1387,6 @@ function showToast(msg) {
 document.addEventListener('DOMContentLoaded', () => {
     showScreen('screen-role');
 });
-
-function saveProfile() {
-    const name = document.getElementById('profile-name').value;
-    document.getElementById('teen-greeting').textContent = 'Привет, ' + name + '! 👋';
-    showToast('Профиль сохранён!');
-    setTimeout(() => showScreen('screen-teen-settings'), 800);
-}
-function addChild() {
-    const code = document.getElementById('invite-code').value;
-    if (code.length < 4) {
-        showToast('Введите корректный код!');
-        return;
-    }
-    showToast('Ребёнок привязан!');
-    setTimeout(() => showScreen('screen-parent-settings'), 800);
-}
-
-
-function showModal(text) {
-    const modal = document.createElement('div');
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px;';
-    modal.innerHTML = '<div style="background:#1a1a2e;border-radius:20px;padding:32px;max-width:320px;width:100%;text-align:center;border:1px solid #2a2a4a;"><div style="font-size:48px;margin-bottom:16px;">ℹ️</div><div style="font-size:16px;margin-bottom:24px;line-height:1.5;">' + text + '</div><button onclick="this.closest('.modal-overlay').remove()" style="padding:12px 32px;background:linear-gradient(135deg,#00d4aa,#00a8e8);border:none;border-radius:12px;color:#0a0a0a;font-size:14px;font-weight:700;cursor:pointer;">Понятно</button></div>';
-    modal.className = 'modal-overlay';
-    modal.onclick = function(e) { if(e.target === modal) modal.remove(); };
-    document.body.appendChild(modal);
-}
-
 </script>
 </body>
 </html>
